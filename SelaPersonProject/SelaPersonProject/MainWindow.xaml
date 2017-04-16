@@ -1,0 +1,192 @@
+﻿<Window
+    x:Class="SelaPersonProject.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SelaPersonProject.Convertors"
+    xmlns:customControl="clr-namespace:SelaPersonProject.CustomControl"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:SelaPersonProject.ViewModel"
+    Title="MainWindow"
+    Width="525"
+    Height="350"
+    d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel}"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:GenderConvertor x:Key="GenderConvertor" />
+            <converters:NullToVisiblityConverter
+                x:Key="NullToVisiblityConverter"
+                FalseValue="Visible"
+                TrueValue="Hidden" />
+        </ResourceDictionary>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="GridView">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Person List:" />
+            <DataGrid
+                x:Name="PersonList"
+                Grid.Row="1"
+                Margin="0,5,0,5"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserReorderColumns="True"
+                CanUserResizeColumns="True"
+                CanUserResizeRows="False"
+                CanUserSortColumns="True"
+                IsReadOnly="True"
+                ItemsSource="{Binding PersonListCollection}"
+                SelectedItem="{Binding PersonItem}"
+                VerticalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding FirstName}" Header="First Name" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding LastName}"
+                        Header="Last Name" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </Grid>
+
+        <Grid Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Padding="10,0,0,0"
+                VerticalAlignment="Center"
+                Text="Details:" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Padding="10,0,0,0"
+                VerticalAlignment="Center"
+                Text="First Name:" />
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                Height="20"
+                Margin="10,0,10,0"
+                IsReadOnly="True"
+                Text="{Binding PersonItem.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" />
+
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="0"
+                Padding="10,0,0,0"
+                VerticalAlignment="Center"
+                Text="Last Name:" />
+            <TextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                Height="20"
+                Margin="10,0,10,0"
+                IsReadOnly="True"
+                Text="{Binding PersonItem.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" />
+
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Padding="10,0,0,0"
+                VerticalAlignment="Center"
+                Text="Birthday:" />
+            <DatePicker
+                Grid.Row="3"
+                Grid.Column="1"
+                Height="25"
+                Margin="10,0,10,0"
+                IsEnabled="False"
+                Text="{Binding PersonItem.Birthday, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" />
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="0"
+                Padding="10,0,0,0"
+                VerticalAlignment="Center"
+                Text="Gender:" />
+
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Image
+                    Grid.Column="0"
+                    Source="{Binding ImageGender, Mode=OneWay}"
+                    Visibility="{Binding PersonItem, Converter={StaticResource NullToVisiblityConverter}}" />
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="10,0,10,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    IsEnabled="False">
+                    <RadioButton
+                        Name="MalePerson"
+                        Width="100"
+                        Command="{Binding GenderToMaleCommand, Mode=OneTime}"
+                        Content="Male"
+                        GroupName="PersonGender"
+                        IsChecked="{Binding PersonItem.IsFemale, Mode=OneWay, Converter={StaticResource GenderConvertor}}" />
+                    <RadioButton
+                        Name="FemalePerson"
+                        Width="100"
+                        Command="{Binding GenderToFemaleCommand, Mode=OneTime}"
+                        Content="Female"
+                        GroupName="PersonGender"
+                        IsChecked="{Binding PersonItem.IsFemale, Mode=OneWay}" />
+                </StackPanel>
+
+            </Grid>
+            <TextBlock
+                Grid.Row="5"
+                Grid.Column="0"
+                Padding="10,0,0,0"
+                VerticalAlignment="Center"
+                Text="Secret:" />
+            <customControl:EditableCustomControl
+                Grid.Row="5"
+                Grid.Column="1"
+                IsChecked="False"
+                TextData="{Binding PersonItem.SecretPerson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" />
+            <Button
+                Grid.Row="7"
+                Grid.Column="0"
+                Margin="10"
+                Command="{Binding SaveCommand, Mode=OneTime}"
+                Content="Save"
+                ToolTip="Save" />
+            <Button
+                Grid.Row="7"
+                Grid.Column="1"
+                Margin="10"
+                Command="{Binding DeleteCommand, Mode=OneTime}"
+                Content="Delete"
+                ToolTip="Delete" />
+        </Grid>
+    </Grid>
+</Window>
